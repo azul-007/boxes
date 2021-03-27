@@ -13,4 +13,29 @@
 
 ![nmap](https://user-images.githubusercontent.com/15880042/112721896-c987c680-8edc-11eb-850e-36058baedd07.png)
 
+Nmap has returned 6 ports:
+* 22/TCP - default SSH port. Potential for SSH keys to be left on this box.
+* 80/TCP - default port for HTTP web browsing. Hmm there may be a CMS here.
+* 111/TCP - provides remote procedure call port mapping
+* 139/TCP - netbios/samba, file sharing port. *Use smbmap, nbtlookup, nbtstat*
+* 443/TCP - standard HTTPS web browsing port
+* 1024/TCP - 
+* The scrips results returned the NetBIOS name of the box: KIOPTRIX.
 
+## Enumeration
+
+Now that we have all listed all the ports, let's begin enumerating them. We'll start by simply going to the browser on port 80
+
+### http
+
+Browsed to the web page and we are presented with a test page. After inspecting the html, doesn't look like there's any leads present. Let's 
+check out that samba port, 139
+
+![test_page](https://user-images.githubusercontent.com/15880042/112722773-c3e0af80-8ee1-11eb-97bc-76a2bf1c7d4a.png)
+
+
+### samba
+
+Earlier we found the hostname of the machine: KIOPTRIX. An nmblookup scan confirms this
+
+![nmblookup](https://user-images.githubusercontent.com/15880042/112723018-e8895700-8ee2-11eb-8058-5daad5c279a4.png)
