@@ -44,3 +44,5 @@ Using nbtscan, we found the username, KIOPTRIX
 
 <img width="1280" alt="username" src="https://user-images.githubusercontent.com/15880042/112726988-92261380-8ef6-11eb-913a-de853464d1c2.png">
 
+Now, although we don't have a password, let's see if we can attempt to connect via SSH with the KIOPTRIX username. We received an error message:
+*Unable to negotiate with 192.168.1.104 port 22: no matching key exchange method found. Their offer: diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1*
