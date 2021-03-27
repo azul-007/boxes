@@ -36,6 +36,11 @@ check out that samba port, 139
 
 ### samba
 
-Earlier we found the hostname of the machine: KIOPTRIX. An nmblookup scan confirms this
+Earlier we found the hostname of the machine: KIOPTRIX. An nmblookup confirms this
 
 ![nmblookup](https://user-images.githubusercontent.com/15880042/112723018-e8895700-8ee2-11eb-8058-5daad5c279a4.png)
+
+Using nbtscan, we found the username, KIOPTRIX
+
+<img width="1280" alt="username" src="https://user-images.githubusercontent.com/15880042/112726988-92261380-8ef6-11eb-913a-de853464d1c2.png">
+
