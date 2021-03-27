@@ -46,3 +46,12 @@ Using nbtscan, we found the username, KIOPTRIX
 
 Now, although we don't have a password, let's see if we can attempt to connect via SSH with the KIOPTRIX username. We received an error message:
 *Unable to negotiate with 192.168.1.104 port 22: no matching key exchange method found. Their offer: diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1*
+
+After some googling, I came across this article: https://unix.stackexchange.com/questions/402746/ssh-unable-to-negotiate-no-matching-key-exchange-method-found
+
+This happens because "your system and the remote system don't share at least one cipher, there is no cipher to agree on and no encrypted channel is possible". You must specify which cipher to use.
+
+Add -oKexAlgorithms=+diffie-hellman-group1-sha1 after ssh and before the username@server
+
+![ssh](https://user-images.githubusercontent.com/15880042/112734300-4cc80d00-8f1b-11eb-83ce-cabbd68771f2.png)
+
