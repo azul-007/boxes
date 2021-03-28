@@ -45,12 +45,12 @@ Download from [vulnhub](https://www.vulnhub.com/entry/tempus-fugit-1,346/):
 
 # Network Scanning
 ## Netdiscover
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/netdiscover.png)
+![](https://github.com/azul-007/boxes/blob/main/images/netdiscover.png)
 
 Kicking things off with a netdiscover scan. Ensure that you're operating in a NAT environment. Never put vulnerable machines
 on your real network. Victim IP has been found, **192.168.19.149**
 ## Nmap Scan
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/nmap.png)
+![](https://github.com/azul-007/boxes/blob/main/images/nmap.png)
 
 I scanned the target with my [custom python script](https://github.com/azul-007/tools/blob/master/reconnaissance/boxscan.py). This script creates a box with the name of the target and executes nmap, dirb and nikto scans. It will then move into the target directory and create an image directory. The output of the scans are sent to text files with the target name appended to each scan type.
 
@@ -58,41 +58,41 @@ Here we see that only port 80 is open, running an nginx server 1.15.3 and OS is 
 
 # Enumeration
 ## Browsing Webpage
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/upload_button.png)
+![](https://github.com/azul-007/boxes/blob/main/images/upload_button.png)
 
 Navigate to the page at http://192.168.19.149
 
 ## Command Injection Test with Burp
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/upload_page.png)
+![](https://github.com/azul-007/boxes/blob/main/images/upload_page.png)
 
 Browsing the page you'll notice an upload tab. This immediately catches my attention. Any time you come across a web page with upload capabilities, you should investigate and test to see what you can/can't upload. Intercept the request with Burp proxy and try modifying the extension. Here I tested for command injection with "id". If successful, it should display the contents of the text as well as the ouput of the "id" command.
 
 > With Burp Suite open upload your file...
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/command_injection_test.png)
+![](https://github.com/azul-007/boxes/blob/main/images/command_injection_test.png)
 
 > Inject "id" after test3.txt;
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/command_injection_test2.png.png)
+![](https://github.com/azul-007/boxes/blob/main/images/command_injection_test2.png.png)
 
 > Success! Command injection is possible
 
 Ok, let's see what we can find in the current directory. Intercept the request again. But for this command injection attempt we're going to use **ls -l**
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/command_injection.png)
+![](https://github.com/azul-007/boxes/blob/main/images/command_injection.png)
 
 Look closely, you'll see a python file titled main.py. Intercept the request again and attempt to list the contents of main.py. Dot notation is being implemented, preventing you from seeing the contents. Perform another intercept, this time using a wildcard on main.py
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/cat_main_2.png)
+![](https://github.com/azul-007/boxes/blob/main/images/cat_main_2.png)
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/cat_main_Creds.png)
+![](https://github.com/azul-007/boxes/blob/main/images/cat_main_Creds.png)
 
 > Credentials: 'someuser', 'b232a4da4c104798be4613ab76d26efda1a04606'
 
 ## Bypassing Dot Notation
 
-![](https://github.com/azul-007/boxes/blob/master/tempus/images/smartconversion.png)
+![](https://github.com/azul-007/boxes/blob/main/images/smartconversion.png)
 
 I tried uploading a netcat reverse shell via command injection with the given IP, however, it would not work. After some trial and error, I got curious and converted the IP to a long number via [smartconversion](https://www.smartconversion.com/unit_conversion/IP_Address_Converter.aspx)
 
